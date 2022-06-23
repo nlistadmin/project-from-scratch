@@ -31,7 +31,7 @@ const app = express();
 
 app.use(cors());
 
-const createUsersWithMessages = async () => {
+const createUsersWithMessages = async (date) => {
     await models.User.create(
         {
             username: 'rwieruch',
@@ -41,6 +41,7 @@ const createUsersWithMessages = async () => {
             messages: [
                 {
                     text: 'Published the Road to learn React',
+                    createdAt: date.setSeconds(date.getSeconds()+1),
                 }
             ],
         },
@@ -57,9 +58,45 @@ const createUsersWithMessages = async () => {
             messages: [
                 {
                     text: 'Happy to release ...',
+                    createdAt: date.setSeconds(date.getSeconds()+1),
                 },
                 {
                     text: 'Published a complete ...',
+                    createdAt: date.setSeconds(date.getSeconds()+1),
+                }
+            ],
+        },
+        {
+            include: [models.Message],
+        }
+    );
+    await models.User.create(
+        {
+            username: 'lmaritz',
+            email: 'lmaritz@gmail.com',
+            password:'password',
+            role:'',
+            messages: [
+                {
+                    text: 'Educational techniques report issued',
+                    createdAt: date.setSeconds(date.getSeconds()+1),
+                }
+            ],
+        },
+        {
+            include: [models.Message],
+        }
+    );
+    await models.User.create(
+        {
+            username: 'aprinsloo',
+            email: 'aprinsloo@yahoo.com',
+            password:'password',
+            role:'',
+            messages: [
+                {
+                    text: 'New user manual released',
+                    createdAt: date.setSeconds(date.getSeconds()+1),
                 }
             ],
         },
@@ -74,7 +111,7 @@ const createUsersWithMessages = async () => {
     console.log(chalk.blue('Connection has been established succesfully.'));
     await sequelize.sync({force: eraseDatabaseOnSync});
     if(eraseDatabaseOnSync) {
-        await createUsersWithMessages();
+        await createUsersWithMessages(new Date());
         console.log(chalk.blue('Sample data created!'));
     }
 
@@ -92,13 +129,22 @@ const createUsersWithMessages = async () => {
                 message,
             };
         },
-        context: async ({req}) => {
-            const me = await getMe(req);
-            return {
-                models,
-                me,
-                secret: process.env.SECRET,
-            };
+        context: async ({req, connection}) => {
+            
+            if (connection) {
+                return {
+                    models,
+                };
+            }
+
+            if (req) {
+                const me = await getMe(req);
+                return {
+                    models,
+                    me,
+                    secret: process.env.SECRET,
+                };
+            }
         },
     });
 
@@ -109,5 +155,5 @@ const createUsersWithMessages = async () => {
         console.log(chalk.blue('Apollo Server on http://localhost:3001/graphql'));
     });
 })().catch(
-    (reason) => console.log(Chalk.red('An error occured: ',reason))
+    (reason) => console.log(chalk.red('An error occured: ',reason))
 );
