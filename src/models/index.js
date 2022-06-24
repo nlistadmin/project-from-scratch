@@ -3,7 +3,7 @@ import { user } from './user.js';
 import { message } from './message.js';
 
 const sequelize = new Sequelize(
-    process.env.DATABASE,
+    process.env.TEST_DATABASE || process.env.DATABASE,
     process.env.DATABASE_USER,
     process.env.DATABASE_PASSWORD,
     {

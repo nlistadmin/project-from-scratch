@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test-server": "TEST_DATABASE=mytestdatabase npm start",
+    "test": "mocha --require @babel/register 'src/**/*.spec.js'"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +16,9 @@
     "@babel/core": "^7.18.2",
     "@babel/node": "^7.17.10",
     "@babel/preset-env": "^7.18.2",
+    "axios": "^0.27.2",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
     "nodemon": "^2.0.16"
   },
   "dependencies": {

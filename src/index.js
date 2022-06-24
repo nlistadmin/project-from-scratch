@@ -109,8 +109,11 @@ const createUsersWithMessages = async (date) => {
 (async () => {
     await sequelize.authenticate();
     console.log(chalk.blue('Connection has been established succesfully.'));
-    await sequelize.sync({force: eraseDatabaseOnSync});
-    if(eraseDatabaseOnSync) {
+
+    const isTest = !!process.env.TEST_DATABASE;
+
+    await sequelize.sync({force: isTest });
+    if(isTest) {
         await createUsersWithMessages(new Date());
         console.log(chalk.blue('Sample data created!'));
     }
